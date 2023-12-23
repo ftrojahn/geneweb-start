@@ -1,0 +1,40 @@
+version: '2.4'
+
+services:
+  geneweb:
+    image:  ghcr.io/ftrojahn/geneweb:a67aa34 # Or whatever the latest tag is here: https://github.com/ftrojahn/geneweb/pkgs/container/geneweb
+    # derived from:
+    # image: ghcr.io/fpiesche/geneweb:cb40fbd # Or whatever the latest tag is here: https://github.com/fpiesche/geneweb/pkgs/container/geneweb
+    command: |
+      /bin/bash -c '
+        if ! [ -z "$$SETUP_ACCESS_ALLOWED_IP" ]; then
+          echo "$$SETUP_ACCESS_ALLOWED_IP" > etc/gwsetup_only;
+        fi && 
+        [ -f share/data/database.ged ] && echo "===== Importing Gedcom file =====" &&  share/dist/gw/ged2gwb share/data/database.ged -o share/data/bases/database &&
+        share/dist/gw/consang share/data/bases/database.gwb && mv share/data/database.ged share/data/database.ged.imported
+        [ -f share/data/database.gw ] && echo "===== Importing GW file =====" && share/dist/gw/gwc -f -cg -o share/data/bases/database share/data/database.gw  && mv share/data/database.gw share/data/database.gw.imported
+        bin/geneweb-launch.sh
+      '
+    ports:
+      - '2316:2316'
+      - '2317:2317'
+    # uncomment next line, if you want to start this service automagically on reboot
+    # restart: always
+    environment:
+      # If you get a "Forbidden access" message when trying to access the admin screen copy
+      # the IP address it tells you to set "gwsetup_only" to and set this env var to that IP:
+      # SETUP_ACCESS_ALLOWED_IP: '1.1.1.1'
+
+      # Set this if you want to use a language other than English:
+      GENEWEB_LANG: 'de'
+    
+      # Note these are only used to set a username and password if no database exists.
+      # If you don't set these env vars and there's no database then a random password
+      # will be used and displayed in the logs.
+      # GENEWEB_ADMIN: "admin"
+      # GENEWEB_ADMIN_PASS: "changeme"
+    volumes:
+      - ./data:/usr/local/share/geneweb/share/data
+
+volumes:
+  data:
