@@ -1,8 +1,6 @@
-version: '2.4'
-
 services:
   geneweb:
-    image:  ghcr.io/ftrojahn/geneweb:a67aa34 # Or whatever the latest tag is here: https://github.com/ftrojahn/geneweb/pkgs/container/geneweb
+    image:  ghcr.io/ftrojahn/geneweb:7841415 # Or whatever the latest tag is here: https://github.com/ftrojahn/geneweb/pkgs/container/geneweb
     # derived from:
     # image: ghcr.io/fpiesche/geneweb:cb40fbd # Or whatever the latest tag is here: https://github.com/fpiesche/geneweb/pkgs/container/geneweb
     command: |
