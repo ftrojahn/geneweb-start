@@ -1,6 +1,6 @@
 services:
   geneweb:
-    image:  ghcr.io/ftrojahn/geneweb:7841415 # Or whatever the latest tag is here: https://github.com/ftrojahn/geneweb/pkgs/container/geneweb
+    image:  ghcr.io/ftrojahn/geneweb:338ede6 # Or whatever the latest tag is here: https://github.com/ftrojahn/geneweb/pkgs/container/geneweb
     # derived from:
     # image: ghcr.io/fpiesche/geneweb:cb40fbd # Or whatever the latest tag is here: https://github.com/fpiesche/geneweb/pkgs/container/geneweb
     command: |
@@ -8,9 +8,9 @@ services:
         if ! [ -z "$$SETUP_ACCESS_ALLOWED_IP" ]; then
           echo "$$SETUP_ACCESS_ALLOWED_IP" > etc/gwsetup_only;
         fi && 
-        [ -f share/data/database.ged ] && echo "===== Importing Gedcom file =====" &&  share/dist/gw/ged2gwb share/data/database.ged -o share/data/bases/database &&
+        [ -f share/data/database.ged ] && echo "===== Importing Gedcom file =====" && ( cd share/data/bases && ../../dist/gw/ged2gwb ../database.ged -o database ) &&
         share/dist/gw/consang share/data/bases/database.gwb && mv share/data/database.ged share/data/database.ged.imported
-        [ -f share/data/database.gw ] && echo "===== Importing GW file =====" && share/dist/gw/gwc -f -cg -o share/data/bases/database share/data/database.gw  && mv share/data/database.gw share/data/database.gw.imported
+        [ -f share/data/database.gw ] && echo "===== Importing GW file =====" && ( cd share/data/bases && ../../dist/gw/gwc -f -cg -o database ../database.gw ) && mv share/data/database.gw share/data/database.gw.imported
         bin/geneweb-launch.sh
       '
     ports:
