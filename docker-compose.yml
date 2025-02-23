@@ -1,6 +1,7 @@
 services:
   geneweb:
-    image:  ghcr.io/ftrojahn/geneweb:7841415 # Or whatever the latest tag is here: https://github.com/ftrojahn/geneweb/pkgs/container/geneweb
+    image:  ghcr.io/ftrojahn/geneweb:9428885 # Or whatever the latest tag is here: https://github.com/ftrojahn/geneweb/pkgs/container/geneweb
+    # image:  ghcr.io/ftrojahn/geneweb:7841415 # Or whatever the latest tag is here: https://github.com/ftrojahn/geneweb/pkgs/container/geneweb
     # derived from:
     # image: ghcr.io/fpiesche/geneweb:cb40fbd # Or whatever the latest tag is here: https://github.com/fpiesche/geneweb/pkgs/container/geneweb
     command: |
@@ -8,9 +9,9 @@ services:
         if ! [ -z "$$SETUP_ACCESS_ALLOWED_IP" ]; then
           echo "$$SETUP_ACCESS_ALLOWED_IP" > etc/gwsetup_only;
         fi && 
-        [ -f share/data/database.ged ] && echo "===== Importing Gedcom file =====" &&  share/dist/gw/ged2gwb share/data/database.ged -o share/data/bases/database &&
-        share/dist/gw/consang share/data/bases/database.gwb && mv share/data/database.ged share/data/database.ged.imported
-        [ -f share/data/database.gw ] && echo "===== Importing GW file =====" && share/dist/gw/gwc -f -cg -o share/data/bases/database share/data/database.gw  && mv share/data/database.gw share/data/database.gw.imported
+        [ -f share/data/database.ged ] && echo "===== Importing Gedcom file =====" && share/dist/gw/ged2gwb -bd share/data share/data/database.ged &&
+        share/dist/gw/consang share/data/database.gwb && mv share/data/database.ged share/data/database.ged.imported
+        [ -f share/data/database.gw ] && echo "===== Importing GW file =====" && share/dist/gw/gwc -f -cg -bd share/data share/data/database.gw && mv share/data/database.gw share/data/database.gw.imported
         bin/geneweb-launch.sh
       '
     ports:
@@ -25,7 +26,10 @@ services:
 
       # Set this if you want to use a language other than English:
       GENEWEB_LANG: 'de'
-    
+
+      # Set custom arguments - uncomment and set e.g. ' -wjf '
+      # Default is " -cache-in-memory $GENEWEB_DB"
+      # GENEWEB_CUSTOM_ARGS: '  '
       # Note these are only used to set a username and password if no database exists.
       # If you don't set these env vars and there's no database then a random password
       # will be used and displayed in the logs.
